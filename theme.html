@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns#" xmlns:og="http://ogp.me/ns#">
+<head>
+    <meta charset="utf-8">
+    <title>
+        {% if is_login %}Login
+        {% elif is_home %}{{ site.author }}
+        {% elif is_tag %}{{ tag }}
+        {% elif post.type == 'post' %}{{ post.title }}
+        {% elif post.type == 'link' %}{{ link.title }}
+        {% elif post.type == 'page' %}{{ page.title }}
+        {% endif %} 
+        | {{ site.name }}
+    </title>
+
+    {{ header_meta }}
+
+    <link href="{{ static('bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" />
+    <link href="{{ static('bootstrap/css/bootstrap-responsive.min.css') }}" rel="stylesheet" />
+    <link href="{{ static('fontawesome/css/font-awesome.min.css') }}" rel="stylesheet" />
+    <link href="{{ static('themes/deuce/deuce.css') }}" rel="stylesheet" />
+    <link href="{{ static('themes/_assets/mediaelement/mediaelementplayer.css') }}" rel="stylesheet" />
+
+    <!--[if IE 7]>
+        <link href="{{ static('fontawesome/css/font-awesome-ie7.min.css') }}" rel="stylesheet">
+    <![endif]-->
+    <!--[if lt IE 9]>
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <style type="text/css">
+        h1.mini-header { font-size: 1.5rem; text-align: center; line-height: 1.5; padding: 20px 0 60px 0; }
+        .post-body img { padding-bottom: 14px; }
+    </style>
+
+    {% if site.analytics %}
+    <script>
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', '{{ site.analytics }}']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+    {% endif %}
+</head>
+<body>
+
+  {% if is_login %}
+
+    {{ login_form }}  
+  
+  {% else %}
+    <h1 class="mini-header">{{ site.name }}</h1>
+    
+    {% if is_home or is_tag %}
+
+    {% if is_tag %}
+    <h2>Showing all posts tagged as {{ tag}}:</h2>
+    {% endif %}
+
+    {% if posts %}
+    <div class="row content">
+        <div class="span8 posts wrapper">
+            {% for post in posts %}
+                <div class="post">
+                    <h1><a href="{{ post.permalink }}">{{ post.title }}</a></h1>
+                    <!--
+                    <aside class="author">
+                        <span class="dots">････････････････････</span>
+                        <img src="{{ site.avatar }}" />
+                        <span class="dots">････････････････････</span>
+                    </aside>
+                    -->
+                    <div class="post-body" data-type-cleanup="true">
+                        {{ post.content }}
+                    </div>
+                    <div class="post-info">
+                        <div class="info-left">
+                            <p class="date">{{ post.created_at|format_date }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            {% if not is_tag %}
+            <div class="pagination">
+                {% if pagination.prev %}<a href="{{ pagination.prev }}" class="post-prev">&larr; View Previous Posts</a>{% endif %}
+                {% if pagination.next %}<a href="{{ pagination.next }}" class="post-next">View More Posts &rarr;</a>{% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% elif post.type == 'post' %}
+
+    <div class="row content">
+        <div class="span8 posts wrapper">
+            <div class="post">
+                <h1>{{ post.title }}</h1>
+                <aside class="author">
+                    <span class="dots">････････････････････</span>
+                    <img src="{{ site.avatar }}" />
+                    <span class="dots">････････････････････</span>
+                </aside>
+                <div class="post-body" data-type-cleanup="true">
+                  {{ post.content }}
+                </div>
+                <div class="post-info">
+                  <div class="info-left">
+                      {{ theme.social.bar }}                    
+                  </div>                  
+                  <div class="info-right">
+                      <p class="date">{{ post.created_at|format_date }}</p>
+                  </div>
+                </div>
+                {% if site.disqus %}
+                <div class="post-comments">
+                    <div id="disqus_thread"></div>
+                    <script type="text/javascript">
+                        var disqus_shortname = '{{ site.disqus }}';
+                        (function() {
+                            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+                            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                        })();
+                    </script>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+    {% elif post.type == 'link' %}
+
+    <div class="row content">
+        <div class="span8 posts wrapper">
+
+            <div class="post">
+                <h2><a href="{{ link.permalink }}">{{ link.title }}</a></h2>
+                <aside class="author">
+                    <span class="dots">････････････････････</span>
+                    <img src="{{ site.avatar }}" />
+                    <span class="dots">････････････････････</span>
+                </aside>
+                <div class="post-body">
+                    <div class="post-content" data-type-cleanup="true">
+                        {{ link.content }}
+                    </div>
+                    <p><i class="icon-link"></i> <a href="{{ link.url }}">{{ link.url }}</a></p>
+                </div>
+                <div class="post-info">
+                  <div class="info-left">
+                      {{ theme.social.bar }}                    
+                  </div>                  
+                  <div class="info-right">
+                      <p class="date">{{ link.created_at|format_date }}</p>
+                  </div>
+                </div>
+                {% if site.disqus %}
+                <div class="post-comments">
+                    <div id="disqus_thread"></div>
+                    <script type="text/javascript">
+                        var disqus_shortname = '{{ site.disqus }}';
+                        (function() {
+                            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+                            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                        })();
+                    </script>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+    {% elif post.type == 'page' %}
+
+    <div class="row content">
+        <div class="span8 posts wrapper">
+
+            <div class="post">
+                <h2><a href="{{ page.permalink }}">{{ page.title }}</a></h2>
+                <aside class="author">
+                    <span class="dots">････････････････････</span>
+                    <img src="{{ site.avatar }}" />
+                    <span class="dots">････････････････････</span>
+                </aside>
+                <div class="post-body" data-type-cleanup="true">
+                    {{ page.title }}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    {% endif %}
+
+    <div class="row footer">
+        <div class="span8 wrapper">
+
+            <div class="row">
+
+                <div class="span8">
+                    <h3>{{ site.name }}</h3>
+                    <p>{{ site.bio }}</p>
+                    <ul class="social">
+                        {% if site.twitter %}
+                        <li><i class="icon-twitter"></i> <a href="{{ site.twitter }}" target="_blank">Twitter</a></li>
+                        {% endif %}
+
+                        {% if site.facebook %}
+                        <li><i class="icon-facebook"></i> <a href="{{ site.facebook }}">Facebook</a></li>
+                        {% endif %}
+
+                        {% if site.googleplus %}
+                        <li><i class="icon-google-plus"></i> <a href="{{ site.googleplus }}?rel=author">Google+</a></li>
+                        {% endif %}
+
+                        {% if site.linkedin %}
+                        <li><i class="icon-linkedin"></i> <a href="{{ site.linkedin }}">LinkedIn</a></li>
+                        {% endif %}
+                        <li><i class="icon-rss"></i> <a href="{{ site.atom_url }}">RSS</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row copyright">
+        <div class="span8 wrapper">
+            <p>&copy; 2013 <a href="mailto:{{ account.email }}">{{ site.name }}</a>. Powered by <a href="http://postach.io">Postach.io</a>.</p>
+        </div>
+    </div>
+    
+    {% endif %}
+
+    {{ footer_meta }}
+
+    <script src="{{ static('themes/_assets/bootstrap/js/bootstrap.min.js') }}"></script>
+
+</body>
+</html>
